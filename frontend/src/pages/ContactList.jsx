@@ -58,7 +58,7 @@ const ContactList = () => {
     const filtered = contacts.filter(
       (contact) =>
         contact.name.toLowerCase().includes(lowerSearch) ||
-        contact.email.toLowerCase().includes(lowerSearch)
+        contact.email.toLowerCase().includes(lowerSearch),
     );
     setFilteredContacts(filtered);
   }, [searchTerm, contacts]);
@@ -67,7 +67,7 @@ const ContactList = () => {
     const sorted = [...filteredContacts].sort((a, b) =>
       sortOrder === "asc"
         ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
+        : b.name.localeCompare(a.name),
     );
     setFilteredContacts(sorted);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");

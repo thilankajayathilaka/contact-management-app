@@ -14,10 +14,10 @@ export const fetchContacts = async () => {
   } catch (error) {
     console.error(
       "Error fetching contacts:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch contacts."
+      error.response?.data?.message || "Failed to fetch contacts.",
     );
   }
 };
@@ -30,10 +30,10 @@ export const getContact = async (id) => {
   } catch (error) {
     console.error(
       `Error fetching contact ID ${id}:`,
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw new Error(
-      error.response?.data?.message || "Failed to fetch contact."
+      error.response?.data?.message || "Failed to fetch contact.",
     );
   }
 };
@@ -46,10 +46,10 @@ export const createContact = async (contact) => {
   } catch (error) {
     console.error(
       "Error creating contact:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw new Error(
-      error.response?.data?.message || "Failed to create contact."
+      error.response?.data?.message || "Failed to create contact.",
     );
   }
 };
@@ -62,10 +62,10 @@ export const updateContact = async (id, contact) => {
   } catch (error) {
     console.error(
       `Error updating contact ID ${id}:`,
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw new Error(
-      error.response?.data?.message || "Failed to update contact."
+      error.response?.data?.message || "Failed to update contact.",
     );
   }
 };
@@ -77,10 +77,10 @@ export const deleteContact = async (id) => {
   } catch (error) {
     console.error(
       `Error deleting contact ID ${id}:`,
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw new Error(
-      error.response?.data?.message || "Failed to delete contact."
+      error.response?.data?.message || "Failed to delete contact.",
     );
   }
 };
