@@ -1,11 +1,9 @@
 function App() {
-
   return (
-    <div>
-      <h1>Contact Management App</h1>
-      <p>Welcome to the React frontend!</p>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold underline">Hello world!</h1>
     </div>
   );
 }
 
-export default App
+export default App;
