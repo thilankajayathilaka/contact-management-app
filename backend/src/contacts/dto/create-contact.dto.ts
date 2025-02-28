@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export class CreateContactDto {
   @ApiProperty({ example: 'John Doe', description: 'Full name of the contact' })
@@ -16,11 +22,12 @@ export class CreateContactDto {
   email: string;
 
   @ApiProperty({
-    example: '1234567890',
-    description: 'Phone number of the contact',
+    example: '0712345678',
+    description: 'Phone number of the contact (only digits allowed)',
     required: false,
   })
   @IsString({ message: 'Phone number must be a string.' })
   @IsOptional()
+  @Matches(/^\d+$/, { message: 'Phone number must contain only digits.' })
   phone?: string;
 }
