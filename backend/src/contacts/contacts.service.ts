@@ -38,4 +38,10 @@ export class ContactsService {
     Object.assign(contact, updateData);
     return this.contactsRepository.save(contact);
   }
+  async remove(id: number): Promise<void> {
+    const result = await this.contactsRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`Contact with ID ${id} not found`);
+    }
+  }
 }
