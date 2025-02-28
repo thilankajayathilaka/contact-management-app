@@ -8,12 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS with specific options for production:
-  app.enableCors({
-    origin: ['http://localhost:5174'], // Only allow these origins
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
-
+  app.enableCors();
   // Use global validation pipe to validate incoming requests
   app.useGlobalPipes(
     new ValidationPipe({
