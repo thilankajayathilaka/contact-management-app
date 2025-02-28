@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Contact } from './contacts/entities/contact.entity';
 import { ContactsModule } from './contacts/contacts.module';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -25,4 +26,8 @@ import { HealthService } from './health.service';
   controllers: [HealthController],
   providers: [HealthService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*'); // Apply to all routes
+  }
+}
