@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { createContact, updateContact } from "../api/contactsApi";
+import Notification from "../components/Notification";
 
 const ContactForm = ({ contact, onSuccess }) => {
-  // Use the provided contact details if editing; otherwise, use empty defaults.
   const [formData, setFormData] = useState({
     name: contact?.name || "",
     email: contact?.email || "",
@@ -10,26 +10,52 @@ const ContactForm = ({ contact, onSuccess }) => {
   });
 
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Real-time validation on input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(null); // Clear errors when user starts typing
+  };
+
+  // Validate form before sending request
+  const validateForm = () => {
+    if (!formData.name.trim()) return "⚠ Name is required.";
+    if (!/^\S+@\S+\.\S+$/.test(formData.email))
+      return "⚠ Please enter a valid email address.";
+    if (!/^\d{7,15}$/.test(formData.phone))
+      return "⚠ Phone number must contain only digits (7-15 characters).";
+    return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage("");
     setLoading(true);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      setLoading(false);
+      return;
+    }
+
     try {
       if (contact) {
         await updateContact(contact.id, formData);
+        setSuccessMessage("✅ Contact updated successfully!");
       } else {
         await createContact(formData);
+        setSuccessMessage("✅ Contact created successfully!");
       }
-      onSuccess(); // Callback to refresh or navigate after success.
+
+      setTimeout(() => {
+        onSuccess();
+      }, 1500);
     } catch (err) {
-      console.error("Submission failed:", err);
-      setError("Submission failed. Please check your input and try again.");
+      setError(`⚠ ${err}`);
     } finally {
       setLoading(false);
     }
@@ -40,7 +66,19 @@ const ContactForm = ({ contact, onSuccess }) => {
       <h2 className="text-2xl font-bold mb-4">
         {contact ? "Update" : "Create"} Contact
       </h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
+
+      {/* ✅ Error & Success Notifications */}
+      <Notification
+        message={error}
+        type="error"
+        onClose={() => setError(null)}
+      />
+      <Notification
+        message={successMessage}
+        type="success"
+        onClose={() => setSuccessMessage("")}
+      />
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">Name:</label>
@@ -71,6 +109,7 @@ const ContactForm = ({ contact, onSuccess }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            required
             className="w-full border border-gray-300 p-2 rounded"
           />
         </div>
@@ -79,7 +118,7 @@ const ContactForm = ({ contact, onSuccess }) => {
           disabled={loading}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
         >
-          {loading ? "Submitting..." : contact ? "Update" : "Create"}
+          {loading ? "Saving..." : contact ? "Update" : "Create"}
         </button>
       </form>
     </div>
