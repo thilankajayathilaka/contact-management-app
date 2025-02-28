@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ContactList from "./pages/ContactList";
 
-const ContactList = () => <div>Contact List Page (Placeholder)</div>;
 const ContactForm = () => <div>Contact Form Page (Placeholder)</div>;
 
 function App() {
