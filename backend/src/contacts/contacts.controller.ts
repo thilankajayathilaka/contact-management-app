@@ -14,6 +14,7 @@ import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
   ApiCreatedResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
@@ -46,6 +47,26 @@ export class ContactsController {
   })
   async findAll(): Promise<Contact[]> {
     return this.contactsService.findAll();
+  }
+  @Get(':id')
+  @ApiOperation({ summary: 'Retrieve a single contact by ID' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'The contact ID',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contact retrieved successfully.',
+    type: Contact,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Not Found: Contact does not exist.',
+  })
+  async findOne(@Param('id', CustomParseIntPipe) id: number): Promise<Contact> {
+    return this.contactsService.findOne(id);
   }
 
   @Put(':id')
