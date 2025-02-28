@@ -23,7 +23,7 @@ export class ContactsService {
   async create(contactData: CreateContactDto): Promise<Contact> {
     this.logger.log(`Creating new contact: ${JSON.stringify(contactData)}`);
     try {
-      // Check if email is unique
+      // ✅ Check if email already exists
       const existingContact = await this.contactsRepository.findOne({
         where: { email: contactData.email },
       });
@@ -45,8 +45,15 @@ export class ContactsService {
         `Failed to create contact: ${error.message}`,
         error.stack,
       );
+
+      // ✅ Preserve the original exception if it's already an HttpException
+      if (error instanceof BadRequestException) {
+        throw error; // ✅ This ensures 400 is returned instead of 500
+      }
+
+      // ✅ Catch unexpected errors & return a 500 error
       throw new InternalServerErrorException(
-        'An error occurred while creating the contact.',
+        'An unexpected error occurred while creating the contact.',
       );
     }
   }
