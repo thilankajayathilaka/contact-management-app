@@ -20,6 +20,13 @@ export class ContactsService {
     const contact = this.contactsRepository.create(contactData);
     return this.contactsRepository.save(contact);
   }
+  async findOne(id: number): Promise<Contact> {
+    const contact = await this.contactsRepository.findOne({ where: { id } });
+    if (!contact) {
+      throw new NotFoundException(`Contact with ID ${id} not found`);
+    }
+    return contact;
+  }
   async findAll(): Promise<Contact[]> {
     return this.contactsRepository.find();
   }
