@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Contact } from './entities/contact.entity';
 import { CreateContactDto } from './dto/create-contact.dto';
+import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Injectable()
 export class ContactsService {
@@ -17,5 +22,20 @@ export class ContactsService {
   }
   async findAll(): Promise<Contact[]> {
     return this.contactsRepository.find();
+  }
+  async update(id: number, updateData: UpdateContactDto): Promise<Contact> {
+    // Enforce that at least one field is provided for update.
+    if (Object.keys(updateData).length === 0) {
+      throw new BadRequestException(
+        'At least one field must be provided for update.',
+      );
+    }
+
+    const contact = await this.contactsRepository.findOne({ where: { id } });
+    if (!contact) {
+      throw new NotFoundException(`Contact with ID ${id} not found`);
+    }
+    Object.assign(contact, updateData);
+    return this.contactsRepository.save(contact);
   }
 }
