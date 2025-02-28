@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 
-const Notification = ({ message, type, onClose }) => {
+const Notification = ({
+  message,
+  type,
+  onClose,
+  autoClose = true,
+  duration = 2500,
+}) => {
+  useEffect(() => {
+    if (message && autoClose) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, duration);
+
+      return () => clearTimeout(timer); // Cleanup to prevent memory leaks
+    }
+  }, [message, autoClose, duration, onClose]);
+
   if (!message) return null;
 
   const bgColor =

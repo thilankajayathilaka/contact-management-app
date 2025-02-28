@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getContact, updateContact } from "../api/contactsApi";
-import Notification from "../components/Notification"; // Import reusable notification component
+import Notification from "../components/Notification";
 
 const EditContactPage = () => {
   const { id } = useParams();
@@ -32,7 +32,7 @@ const EditContactPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🛑 Validate form input before submission
+  // Validate form input before submission
   const validateForm = () => {
     if (!formData.name.trim()) {
       return "⚠ Name is required.";
@@ -52,7 +52,7 @@ const EditContactPage = () => {
     setSuccessMessage("");
     setLoading(true);
 
-    // ✅ Perform frontend validation before hitting API
+    // Perform frontend validation before hitting API
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
