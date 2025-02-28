@@ -1,8 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ContactList from "./pages/ContactList";
-
-const ContactForm = () => <div>Contact Form Page (Placeholder)</div>;
+import NewContactPage from "./pages/NewContactPage";
 
 function App() {
   return (
@@ -10,7 +9,7 @@ function App() {
       <div className="container mx-auto p-4">
         <Routes>
           <Route path="/" element={<ContactList />} />
-          <Route path="/new" element={<ContactForm />} />
+          <Route path="/new" element={<NewContactPage />} />
         </Routes>
       </div>
     </Router>
