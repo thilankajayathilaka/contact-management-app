@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -12,6 +11,7 @@ import { ContactsService } from './contacts.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { Contact } from './entities/contact.entity';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { CustomParseIntPipe } from 'src/common/pipes/custom-parse-int.pipe';
 
 @Controller('contacts')
 export class ContactsController {
@@ -33,7 +33,7 @@ export class ContactsController {
     return this.contactsService.update(+id, updateContactDto);
   }
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id', CustomParseIntPipe) id: number): Promise<void> {
     return this.contactsService.remove(id);
   }
 }
