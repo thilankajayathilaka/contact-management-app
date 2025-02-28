@@ -25,7 +25,7 @@ Ensure you have the following installed on your system:
 ### 1. Clone the Repository
 
 ```sh
-git clone <your-repo-url>
+git clone https://github.com/thilankajayathilaka/contact-management-app.git
 cd contact-management-app
 
 ```
