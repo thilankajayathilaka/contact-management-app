@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Contact } from './contacts/entities/contact.entity';
 import { ContactsModule } from './contacts/contacts.module';
+import { HealthController } from './health.controller';
+import { HealthService } from './health.service';
 
 @Module({
   imports: [
@@ -20,5 +22,7 @@ import { ContactsModule } from './contacts/contacts.module';
     }),
     ContactsModule,
   ],
+  controllers: [HealthController],
+  providers: [HealthService],
 })
 export class AppModule {}
