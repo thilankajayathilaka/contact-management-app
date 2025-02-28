@@ -1,10 +1,9 @@
-import React from 'react';
-import ContactForm from '../components/ContactForm';
+import React from "react";
+import ContactForm from "../components/ContactForm";
 
 const NewContactPage = () => {
   const handleSuccess = () => {
-    // For instance, redirect back to the ContactList page
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   return (

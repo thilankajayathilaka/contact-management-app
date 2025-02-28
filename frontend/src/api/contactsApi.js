@@ -11,6 +11,11 @@ export const fetchContacts = async () => {
   const response = await api.get("/contacts");
   return response.data;
 };
+// Fetch a single contact by ID
+export const getContact = async (id) => {
+  const response = await api.get(`/contacts/${id}`);
+  return response.data;
+};
 
 // Create a new contact
 export const createContact = async (contact) => {
