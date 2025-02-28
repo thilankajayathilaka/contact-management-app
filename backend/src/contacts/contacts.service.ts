@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,7 +13,7 @@ import { UpdateContactDto } from './dto/update-contact.dto';
 
 @Injectable()
 export class ContactsService {
-  private readonly logger = new Logger(ContactsService.name); // Add logger
+  private readonly logger = new Logger(ContactsService.name);
 
   constructor(
     @InjectRepository(Contact)
@@ -21,35 +22,76 @@ export class ContactsService {
 
   async create(contactData: CreateContactDto): Promise<Contact> {
     this.logger.log(`Creating new contact: ${JSON.stringify(contactData)}`);
-    const contact = this.contactsRepository.create(contactData);
-    const savedContact = await this.contactsRepository.save(contact);
-    this.logger.log(
-      `Contact created successfully: ${JSON.stringify(savedContact)}`,
-    );
-    return savedContact;
+    try {
+      // Check if email is unique
+      const existingContact = await this.contactsRepository.findOne({
+        where: { email: contactData.email },
+      });
+
+      if (existingContact) {
+        throw new BadRequestException(
+          `A contact with email "${contactData.email}" already exists.`,
+        );
+      }
+
+      const contact = this.contactsRepository.create(contactData);
+      const savedContact = await this.contactsRepository.save(contact);
+      this.logger.log(
+        `Contact created successfully: ${JSON.stringify(savedContact)}`,
+      );
+      return savedContact;
+    } catch (error) {
+      this.logger.error(
+        `Failed to create contact: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'An error occurred while creating the contact.',
+      );
+    }
   }
 
   async findOne(id: number): Promise<Contact> {
     this.logger.log(`Fetching contact with ID: ${id}`);
-    const contact = await this.contactsRepository.findOne({ where: { id } });
-    if (!contact) {
-      this.logger.warn(`Contact with ID ${id} not found`);
-      throw new NotFoundException(`Contact with ID ${id} not found`);
+    try {
+      const contact = await this.contactsRepository.findOne({ where: { id } });
+      if (!contact) {
+        this.logger.warn(`Contact with ID ${id} not found`);
+        throw new NotFoundException(`Contact with ID ${id} not found`);
+      }
+      this.logger.log(`Found contact: ${JSON.stringify(contact)}`);
+      return contact;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch contact: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'An error occurred while retrieving the contact.',
+      );
     }
-    this.logger.log(`Found contact: ${JSON.stringify(contact)}`);
-    return contact;
   }
 
   async findAll(): Promise<Contact[]> {
     this.logger.log(`Fetching all contacts`);
-    const contacts = await this.contactsRepository.find();
-    this.logger.log(`Fetched ${contacts.length} contacts`);
-    return contacts;
+    try {
+      const contacts = await this.contactsRepository.find();
+      this.logger.log(`Fetched ${contacts.length} contacts`);
+      return contacts;
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch contacts: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'An error occurred while retrieving contacts.',
+      );
+    }
   }
 
   async update(id: number, updateData: UpdateContactDto): Promise<Contact> {
     this.logger.log(`Updating contact with ID: ${id}`);
-    this.logger.debug(`Update data: ${JSON.stringify(updateData)}`);
+    this.logger.debug(`Received update data: ${JSON.stringify(updateData)}`);
 
     if (Object.keys(updateData).length === 0) {
       this.logger.warn(`Update request for ID ${id} contains no valid fields`);
@@ -58,25 +100,56 @@ export class ContactsService {
       );
     }
 
-    const contact = await this.contactsRepository.findOne({ where: { id } });
-    if (!contact) {
-      this.logger.warn(`Contact with ID ${id} not found`);
-      throw new NotFoundException(`Contact with ID ${id} not found`);
-    }
+    try {
+      const contact = await this.contactsRepository.findOne({ where: { id } });
+      if (!contact) {
+        this.logger.warn(`Contact with ID ${id} not found`);
+        throw new NotFoundException(`Contact with ID ${id} not found`);
+      }
 
-    Object.assign(contact, updateData);
-    const updatedContact = await this.contactsRepository.save(contact);
-    this.logger.log(`Contact with ID ${id} updated successfully`);
-    return updatedContact;
+      // Check if the email is unique before updating
+      if (updateData.email && updateData.email !== contact.email) {
+        const existingContact = await this.contactsRepository.findOne({
+          where: { email: updateData.email },
+        });
+
+        if (existingContact) {
+          throw new BadRequestException(
+            `A contact with email "${updateData.email}" already exists.`,
+          );
+        }
+      }
+
+      Object.assign(contact, updateData);
+      const updatedContact = await this.contactsRepository.save(contact);
+      this.logger.log(`Contact with ID ${id} updated successfully`);
+      return updatedContact;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update contact ID ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new BadRequestException(error.message);
+    }
   }
 
   async remove(id: number): Promise<void> {
     this.logger.log(`Deleting contact with ID: ${id}`);
-    const result = await this.contactsRepository.delete(id);
-    if (result.affected === 0) {
-      this.logger.warn(`Contact with ID ${id} not found`);
-      throw new NotFoundException(`Contact with ID ${id} not found`);
+    try {
+      const result = await this.contactsRepository.delete(id);
+      if (result.affected === 0) {
+        this.logger.warn(`Contact with ID ${id} not found`);
+        throw new NotFoundException(`Contact with ID ${id} not found`);
+      }
+      this.logger.log(`Contact with ID ${id} deleted successfully`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete contact: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'An error occurred while deleting the contact.',
+      );
     }
-    this.logger.log(`Contact with ID ${id} deleted successfully`);
   }
 }
