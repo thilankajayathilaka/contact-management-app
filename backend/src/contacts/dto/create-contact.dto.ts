@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Matches,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateContactDto {
   @ApiProperty({ example: 'John Doe', description: 'Full name of the contact' })
@@ -17,10 +11,11 @@ export class CreateContactDto {
     example: 'john.doe@example.com',
     description: 'Email of the contact',
   })
-  @IsEmail({}, { message: 'Please provide a valid email address.' })
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, {
+    message: 'Invalid email format. Use a standard email format.',
+  })
   @IsNotEmpty({ message: 'Email is required.' })
   email: string;
-
   @ApiProperty({
     example: '0712345678',
     description: 'Phone number of the contact (only digits allowed)',
