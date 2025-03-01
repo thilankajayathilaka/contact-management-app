@@ -37,12 +37,18 @@ const EditContactPage = () => {
     if (!formData.name.trim()) {
       return "⚠ Name is required.";
     }
-    if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+
+    // Strict Email Validation based on RFC 5322 (practical version)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(formData.email)) {
       return "⚠ Please enter a valid email address.";
     }
-    if (!/^\d+$/.test(formData.phone)) {
-      return "⚠ Phone number must contain only digits.";
+
+    // Phone number validation: 7-15 digits only
+    if (!/^\d{7,15}$/.test(formData.phone)) {
+      return "⚠ Phone number must contain only digits and be between 7 to 15 characters long.";
     }
+
     return null;
   };
 
@@ -61,8 +67,6 @@ const EditContactPage = () => {
     }
 
     try {
-      console.log("Updating Contact Data:", formData);
-
       const { id, createdAt: _, ...updatedData } = formData;
 
       await updateContact(id, updatedData);

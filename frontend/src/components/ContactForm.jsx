@@ -19,13 +19,23 @@ const ContactForm = ({ contact, onSuccess }) => {
     setError(null); // Clear errors when user starts typing
   };
 
-  // Validate form before sending request
+  // Validate form input before submission
   const validateForm = () => {
-    if (!formData.name.trim()) return "⚠ Name is required.";
-    if (!/^\S+@\S+\.\S+$/.test(formData.email))
+    if (!formData.name.trim()) {
+      return "⚠ Name is required.";
+    }
+
+    // Strict Email Validation based on RFC 5322 (practical version)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(formData.email)) {
       return "⚠ Please enter a valid email address.";
-    if (!/^\d{7,15}$/.test(formData.phone))
-      return "⚠ Phone number must contain only digits (7-15 characters).";
+    }
+
+    // Phone number validation: 7-15 digits only
+    if (!/^\d{7,15}$/.test(formData.phone)) {
+      return "⚠ Phone number must contain only digits and be between 7 to 15 characters long.";
+    }
+
     return null;
   };
 
