@@ -51,9 +51,9 @@ docker-compose up --build
 
 This will:
 
-Start PostgreSQL
-Start NestJS Backend at http://localhost:3000
-Start React Frontend at http://localhost/
+1. Start PostgreSQL
+2. Start NestJS Backend at http://localhost:3000
+3. Start React Frontend at http://localhost/
 
 ### 3. API Documentation (Swagger)
 
